@@ -86,7 +86,13 @@ def process_data(image_pth,mask_pth,kernel_size=2):
 
 def inference(args):
     # config
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    if torch.backends.mps.is_available():
+      device = torch.device("mps")  # Use Apple Metal GPU
+    else:
+      device = torch.device("cpu")  # Fallback to CPU
+
+    print(f"Using device: {device}")
+
     if not os.path.exists(args.log_path):
         os.makedirs(args.log_path)
     model,sampler=create_model(device, args.yaml_path, args.model_path)
@@ -181,4 +187,5 @@ if __name__ == '__main__':
     print(args)
     
     inference(args)
+    
     
